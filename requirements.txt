@@ -1,4 +1,4 @@
-dotenv==0.20.0
+dotenv==0.0.4
 pandas==1.4.3
 streamlit==1.11.1
 shroomdk==1.0.1
