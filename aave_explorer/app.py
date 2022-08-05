@@ -1,5 +1,5 @@
-import os
-from dotenv import load_dotenv
+# import os
+# from dotenv import load_dotenv
 
 import pandas as pd
 import streamlit as st
@@ -20,10 +20,10 @@ from shroomDK.visualizations import (
     get_aave_price_hourly
 )
 
-load_dotenv()
+# load_dotenv()
 
 # Initialize `ShroomDK` with your API Key
-SDK = ShroomDK(os.getenv("FLIPSIDE_API_KEY"))
+SDK = ShroomDK(st.secrets["FLIPSIDE_API_KEY"])
 
 
 st.title("Aave Explorer")
