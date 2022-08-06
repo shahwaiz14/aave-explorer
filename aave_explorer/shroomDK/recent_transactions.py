@@ -46,3 +46,10 @@ def get_aave_latest_deposits(sdk: ShroomDK) -> pd.DataFrame:
         """
     result = sdk.query(sql)
     return pd.DataFrame(result.records)
+
+def get_transaction_details(sdk: ShroomDK, tx_hash: str) -> pd.DataFrame:
+    sql = f"""
+        """
+    result = sdk.query(sql)
+    return pd.DataFrame({"a":2})
+    return pd.DataFrame(result.records)
