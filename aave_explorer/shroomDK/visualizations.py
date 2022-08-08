@@ -18,6 +18,16 @@ def get_aave_price_hourly(sdk: ShroomDK) -> pd.DataFrame:
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
 
-@st.cache()
+
 def get_aave_price_daily(sdk: ShroomDK) -> pd.DataFrame:
-    ...
+    sql = f"""
+    SELECT hour::DATE AS date,
+        price
+        FROM ethereum.core.fact_hourly_token_prices
+        WHERE symbol ILIKE 'aave'
+            AND HOUR(hour) = 23
+            AND hour::DATE >= CURRENT_DATE - 30
+        ORDER BY 1;
+    """
+    results = sdk.query(sql)
+    return pd.DataFrame(results.records)

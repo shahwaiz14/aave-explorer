@@ -1,8 +1,9 @@
 import pandas as pd
+import streamlit as st
 
 from shroomdk import ShroomDK
 
-
+@st.cache()
 def get_aave_price(sdk: ShroomDK) -> float:
     sql = f"""
         SELECT * 
@@ -16,6 +17,7 @@ def get_aave_price(sdk: ShroomDK) -> float:
     query_result_set = sdk.query(sql)
     return round(query_result_set.records[0]["price"], 2)
 
+@st.cache()
 def price_change_in_pct(sdk: ShroomDK):
     sql = f"""
         WITH temp AS (
@@ -35,6 +37,7 @@ def price_change_in_pct(sdk: ShroomDK):
     result = sdk.query(sql)
     return result.records[0]["pct_change"]
 
+@st.cache
 def get_total_holders(sdk: ShroomDK) -> int:
     sql = f"""
     SELECT DISTINCT(COUNT(user_address)) AS number_of_holders
@@ -45,6 +48,7 @@ def get_total_holders(sdk: ShroomDK) -> int:
     result = sdk.query(sql)
     return result.records[0]["number_of_holders"]
 
+@st.cache()
 def get_market_cap(sdk: ShroomDK) -> float:
     aave_supply = 16_000_000
     return get_aave_price(sdk) * aave_supply
