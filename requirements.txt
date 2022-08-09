@@ -1,3 +1,4 @@
 pandas==1.4.3
 streamlit==1.11.1
+altair==4.2.0
 shroomdk==1.0.1
