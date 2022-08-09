@@ -3,11 +3,10 @@ import streamlit as st
 
 from shroomdk import ShroomDK
 
-@st.cache()
 def get_aave_price_hourly(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT hour AS timestamp,
-            HOUR(hour) AS hour,
+            HOUR(hour) AS "hour (in utc)",
             symbol,
             price
             FROM ethereum.core.fact_hourly_token_prices

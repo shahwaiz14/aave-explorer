@@ -42,7 +42,6 @@ st.set_page_config(
 )
 
 st.title("Aave Explorer")
-
 st.image(Image.open('aave.png'))
 
 with st.expander("Currently Supported Markets"):
@@ -62,10 +61,10 @@ col3.metric(label="Market Cap", value=f"{get_market_cap(SDK):,}")
 
 # AAVE hourly and daily price charts
 with st.container():
-    price_option = st.selectbox("Aave Price", ("Daily", "1 hr"))
+    price_option = st.selectbox("Aave Price", ("Daily (last 30 days)", "1 hr"))
     if price_option == "1 hr":
         df = get_aave_price_hourly(SDK)
-        line_chart = alt.Chart(df, height=400).mark_line().encode(x="hour", y="price")
+        line_chart = alt.Chart(df, height=400).mark_line().encode(x="hour (in utc)", y="price")
         st.altair_chart(line_chart, use_container_width=True)
     else:
         df = get_aave_price_daily(SDK)
@@ -77,7 +76,10 @@ with st.container():
         )
         st.altair_chart(line_chart, use_container_width=True)
 
-
+st.markdown(
+    f'<p style="color:#b7bfe4;font-size:40px;border-radius:2%;">Deposits, Withdrawals & Borrowals</p>',
+    unsafe_allow_html=True,
+)
 # AAVE latest deposits, withdrawals, and borrows
 option = st.selectbox(
     "Select Deposits, Withdrawals, or Borrows", ("Withdrawals", "Deposits", "Borrows")
@@ -168,7 +170,7 @@ user_id = st.text_area(
 )
 if user_id:
     time_interval = st.selectbox(
-        "Select Time Interval (in days)", (1, 3, 5, 7, 9, 11, 13, 15)
+        "Select Time Interval (in days)", (1, 3, 5, 7, 9, 11, 13, 15), index=6
     )
     df = get_user_latest_lending_activity(SDK, user_id, time_interval)
     st.subheader("Lending Activity")
