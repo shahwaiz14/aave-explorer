@@ -1,6 +1,4 @@
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 import altair as alt
 import streamlit as st
 from PIL import Image
