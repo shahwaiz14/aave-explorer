@@ -4,7 +4,6 @@ import streamlit as st
 from shroomdk import ShroomDK
 
 ######### WITHDRAWAL QUERIES #################
-@st.cache()
 def get_aave_latest_withdrawals(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT tx_id,
@@ -15,18 +14,17 @@ def get_aave_latest_withdrawals(sdk: ShroomDK) -> pd.DataFrame:
         FROM flipside_prod_db.aave.withdraws
         WHERE symbol IS NOT NULL
         ORDER BY block_id DESC
-        LIMIT 10;
+        LIMIT 15;
         """
     result = sdk.query(sql)
     return pd.DataFrame(result.records)
 
-@st.cache()
 def get_top_assets_withdrawn(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT symbol AS Symbol,
             ROUND(SUM(withdrawn_usd)) AS "Total Withdrawn in USD"
         FROM flipside_prod_db.aave.withdraws
-        WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.withdraws)
+        WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.withdraws) - 1
             AND symbol IS NOT NULL
         GROUP BY 1
         ORDER BY 2 DESC
@@ -34,14 +32,13 @@ def get_top_assets_withdrawn(sdk: ShroomDK) -> pd.DataFrame:
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
 
-@st.cache()
 def get_hourly_withdrawals_today(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT HOUR(block_timestamp) AS Hour,
             COUNT(DISTINCT(tx_id)) AS "Total Transactions",
             ROUND(SUM(withdrawn_usd)) AS "Total Withdrawn in USD"
         FROM flipside_prod_db.aave.withdraws
-        WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.withdraws)
+        WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.withdraws) - 1
             AND symbol IS NOT NULL
         GROUP BY 1
         ORDER BY 1;
@@ -78,7 +75,7 @@ def get_aave_latest_deposits(sdk: ShroomDK) -> pd.DataFrame:
             depositor_address
         FROM flipside_prod_db.aave.deposits
         ORDER BY block_timestamp DESC
-        LIMIT 10;
+        LIMIT 15;
         """
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
@@ -120,7 +117,7 @@ def get_top_borrowed_asset(sdk: ShroomDK) -> pd.DataFrame:
         SUM(borrowed_usd) AS total_borrowed_in_usd,
         SUM(borrowed_tokens) AS total_borrowed_tokens
     FROM flipside_prod_db.aave.borrows
-    WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.borrows)
+    WHERE block_timestamp::DATE = (SELECT MAX(block_timestamp::DATE) FROM flipside_prod_db.aave.borrows) - 1
     GROUP BY symbol
     ORDER BY 2 DESC
     LIMIT 10;

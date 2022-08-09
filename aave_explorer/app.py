@@ -112,11 +112,14 @@ elif option == "Deposits":
         st.subheader("Top Pools Today")
         deposits_df = get_top_deposits_today(SDK)
         st.dataframe(deposits_df)
-        st.bar_chart(
-            deposits_df.set_index("symbol")["total_deposited_in_usd"],
-            height=400,
-            use_container_width=True,
-        )
+        try:
+            st.bar_chart(
+                deposits_df.set_index("symbol")["total_deposited_in_usd"],
+                height=400,
+                use_container_width=True,
+            )
+        except:
+            pass
 
 elif option == "Borrows":
     st.subheader("Top Borrowed Assets for Today")
@@ -131,7 +134,7 @@ st.markdown(
 st.info("Automatically detects if a txn includes lending, withdrawal, or borrowing.")
 
 tx_id = st.text_area(
-    "Enter Transaction Hash (Eg: 0x322a2a183c1fac541ffc109a6e75a6a55a9a521d7dab600d7323c99b40fbea4f)",
+    "Enter Transaction Hash (Try entering: 0x322a2a183c1fac541ffc109a6e75a6a55a9a521d7dab600d7323c99b40fbea4f)",
     placeholder="(Type tx hash and press ⌘ + Enter to see the results)",
 )
 if tx_id:
@@ -166,7 +169,7 @@ st.markdown(
 )
 st.caption("Enter user id and get their lending and borrowing activity")
 user_id = st.text_area(
-    "Enter User Id (Eg: 0x540f45337b548824438a25734f429e4b4095476a)", placeholder="(Press ⌘ + Enter to see the results)"
+    "Enter User Id (Try entering: 0x540f45337b548824438a25734f429e4b4095476a)", placeholder="(Press ⌘ + Enter to see the results)"
 )
 if user_id:
     time_interval = st.selectbox(
@@ -238,5 +241,7 @@ if user_id:
 ##About
 with st.container():
     """ """
-    st.caption("ABOUT:")
-    st.text("Github: https://github.com/shahwaiz14/aave-explorer")
+    st.subheader("ABOUT:")
+    st.caption("Author: Shahwaiz")
+    st.caption("Github: https://github.com/shahwaiz14/aave-explorer")
+    st.caption("Data provided by Flipside Crypto")
