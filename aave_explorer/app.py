@@ -5,16 +5,16 @@ from PIL import Image
 
 from shroomdk import ShroomDK
 
-from shroomDK.metrics import (
+from shroomDK_queries.metrics import (
     get_aave_price,
     price_change_in_pct,
     get_market_cap,
     get_total_holders,
 )
 
-from shroomDK.aave_price import get_aave_price_hourly, get_aave_price_daily
+from shroomDK_queries.aave_price import get_aave_price_hourly, get_aave_price_daily
 
-from shroomDK.withdrawals_deposits_borrows import (
+from shroomDK_queries.withdrawals_deposits_borrows import (
     get_aave_latest_withdrawals,
     get_hourly_withdrawals_today,
     get_top_assets_withdrawn,
@@ -25,7 +25,7 @@ from shroomDK.withdrawals_deposits_borrows import (
     get_deposit_data_for_tx,
     get_borrowed_data_for_tx,
 )
-from shroomDK.aave_user_stats import (
+from shroomDK_queries.aave_user_stats import (
     get_user_latest_lending_activity,
     get_user_total_lending_in_usd,
     get_user_top_lending_pools,
