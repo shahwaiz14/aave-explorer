@@ -19,6 +19,7 @@ def get_aave_latest_withdrawals(sdk: ShroomDK) -> pd.DataFrame:
     result = sdk.query(sql)
     return pd.DataFrame(result.records)
 
+
 def get_top_assets_withdrawn(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT symbol AS Symbol,
@@ -31,6 +32,7 @@ def get_top_assets_withdrawn(sdk: ShroomDK) -> pd.DataFrame:
         """
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
+
 
 def get_hourly_withdrawals_today(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
@@ -45,6 +47,7 @@ def get_hourly_withdrawals_today(sdk: ShroomDK) -> pd.DataFrame:
         """
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
+
 
 @st.cache()
 def get_withdrawal_data_for_tx(sdk: ShroomDK, tx_id: str) -> pd.DataFrame:
@@ -80,6 +83,7 @@ def get_aave_latest_deposits(sdk: ShroomDK) -> pd.DataFrame:
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
 
+
 @st.cache()
 def get_top_deposits_today(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
@@ -96,6 +100,7 @@ def get_top_deposits_today(sdk: ShroomDK) -> pd.DataFrame:
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
 
+
 def get_deposit_data_for_tx(sdk: ShroomDK, tx_id: str) -> pd.DataFrame:
     sql = f"""
         SELECT depositor_address AS address,
@@ -108,6 +113,7 @@ def get_deposit_data_for_tx(sdk: ShroomDK, tx_id: str) -> pd.DataFrame:
         """
     results = sdk.query(sql)
     return pd.DataFrame(results.records)
+
 
 ######### BORROWED QUERIES #################
 @st.cache()
@@ -124,6 +130,7 @@ def get_top_borrowed_asset(sdk: ShroomDK) -> pd.DataFrame:
     """
     result = sdk.query(sql)
     return pd.DataFrame(result.records)
+
 
 def get_borrowed_data_for_tx(sdk: ShroomDK, tx_id: str) -> pd.DataFrame:
     sql = f"""

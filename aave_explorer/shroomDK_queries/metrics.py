@@ -3,6 +3,7 @@ import streamlit as st
 
 from shroomdk import ShroomDK
 
+
 def get_aave_price(sdk: ShroomDK) -> float:
     sql = f"""
         SELECT * 
@@ -16,7 +17,8 @@ def get_aave_price(sdk: ShroomDK) -> float:
     query_result_set = sdk.query(sql)
     return round(query_result_set.records[0]["price"], 2)
 
-def price_change_in_pct(sdk: ShroomDK):
+
+def price_change_in_pct(sdk: ShroomDK) -> float:
     sql = f"""
         WITH temp AS (
             SELECT *,
@@ -31,9 +33,13 @@ def price_change_in_pct(sdk: ShroomDK):
             SELECT pct_change
             FROM temp;
         """
-    
+
     result = sdk.query(sql)
-    return result.records[0]["pct_change"]
+    if result.records[0]["pct_change"] == None:
+        return 0
+    else:
+        return result.records[0]["pct_change"]
+
 
 def get_total_holders(sdk: ShroomDK) -> int:
     sql = f"""
@@ -44,6 +50,7 @@ def get_total_holders(sdk: ShroomDK) -> int:
     """
     result = sdk.query(sql)
     return result.records[0]["number_of_holders"]
+
 
 def get_market_cap(sdk: ShroomDK) -> float:
     aave_supply = 16_000_000

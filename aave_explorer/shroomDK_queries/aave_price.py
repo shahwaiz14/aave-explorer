@@ -3,6 +3,7 @@ import streamlit as st
 
 from shroomdk import ShroomDK
 
+
 def get_aave_price_hourly(sdk: ShroomDK) -> pd.DataFrame:
     sql = f"""
         SELECT hour AS timestamp,
