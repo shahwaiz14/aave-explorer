@@ -110,6 +110,7 @@ ENV/
 env.bak/
 venv.bak/
 .streamlit
+.DS_Store
 
 # Spyder project settings
 .spyderproject

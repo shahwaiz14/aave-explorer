@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 import pandas as pd
 import altair as alt
 import streamlit as st
@@ -34,6 +35,8 @@ from shroomDK_queries.aave_user_stats import (
     get_user_total_borrowed_in_usd,
 )
 
+from shroomDK_queries.apy_rate import get_apy_rates, get_top_pools_in_aave, calculate_earning
+
 # Initialize `ShroomDK` with API Key
 SDK = ShroomDK(st.secrets["FLIPSIDE_API_KEY"])
 
@@ -42,7 +45,7 @@ st.set_page_config(
 )
 
 st.title("Aave Explorer")
-st.image(Image.open('aave.png'))
+st.image(Image.open("aave.png"))
 
 with st.expander("Currently Supported Markets"):
     st.write("Ethereum (Aave V1, V2, AMM)")
@@ -64,7 +67,9 @@ with st.container():
     price_option = st.selectbox("Aave Price", ("Daily (last 30 days)", "1 hr"))
     if price_option == "1 hr":
         df = get_aave_price_hourly(SDK)
-        line_chart = alt.Chart(df, height=400).mark_line().encode(x="hour (in utc)", y="price")
+        line_chart = (
+            alt.Chart(df, height=400).mark_line().encode(x="hour (in utc)", y="price")
+        )
         st.altair_chart(line_chart, use_container_width=True)
     else:
         df = get_aave_price_daily(SDK)
@@ -160,7 +165,6 @@ if tx_id:
         col5.metric(f"{txn.upper()} USD:", round(df[f"{txn}_usd"].squeeze(), 2))
         st.text(f"USER ID: {df['address'].squeeze()}")
 
-# st.text("-" * 90)
 
 # User Id Lending and Borrowing Stats
 st.markdown(
@@ -169,7 +173,8 @@ st.markdown(
 )
 st.caption("Enter user id and get their lending and borrowing activity")
 user_id = st.text_area(
-    "Enter User Id (Try entering: 0x540f45337b548824438a25734f429e4b4095476a)", placeholder="(Press ⌘ + Enter to see the results)"
+    "Enter User Id (Try entering: 0x540f45337b548824438a25734f429e4b4095476a)",
+    placeholder="(Press ⌘ + Enter to see the results)",
 )
 if user_id:
     time_interval = st.selectbox(
@@ -237,6 +242,61 @@ if user_id:
             st.altair_chart(bar_chart, use_container_width=True)
         except:
             pass
+
+
+# Historical APY Lending and Borrowing
+st.markdown(
+    f'<p style="color:#b7bfe4;font-size:40px;border-radius:2%;">Historical APY Search</p>',
+    unsafe_allow_html=True,
+)
+with st.expander("Details"):
+    st.write("""
+    This tool allows you to pick an asset from the drop down list and see its
+    historical APY for both lending and borrowing over a chosen date range. You
+    can also input the amount you would like to lend or borrow and it will show 
+    you the estimated amount you will earn or owe by the end of that time period.
+    """)
+
+asset = st.selectbox("Pick one of the Assets", get_top_pools_in_aave(SDK))
+option = st.selectbox(
+    f"Are you looking to borrow or lend your {asset}?", ("Lend", "Borrow")
+)
+if option:
+    start_date = st.date_input("Start date:", value=date.today() - timedelta(10), max_value=date.today())
+    end_date = st.date_input("End date:", max_value=date.today())
+    if end_date < start_date:
+        st.warning("Please pick the right date")
+
+df, average_apy = get_apy_rates(SDK, option, asset, str(start_date), str(end_date))
+if df.empty:
+    st.info(f"No rates found for {asset} between {start_date} and {end_date}")
+
+st.subheader(f"Historical APY for {option.lower()}ing {asset}")
+st.table(df.sort_values("date", ascending=False))
+try:
+    col_name = "supply_rate" if option == "Lend" else "borrow_rate_stable"
+    bar_chart = (
+                alt.Chart(df, height=400)
+                .mark_bar()
+                .encode(x="date", y=col_name)
+                .configure_axisX(labelAngle=45)
+                )
+
+    st.altair_chart(bar_chart, use_container_width=True)
+except:
+    pass
+
+st.metric(f"Average Rate for {option}ing {asset}:", round(average_apy, 3))
+amount = st.number_input(f"How much are you willing to {option.lower()} {asset}", min_value=0, value=100)
+if amount:
+    t = st.slider("Select time frame in months", min_value=0, max_value=12)
+    if t:
+        f = "earn" if option == "Lend" else "pay"
+        st.metric(
+            f"Total amount you will {f} with {round(average_apy, 3)}% rate in {t} months is:",
+            f"{calculate_earning(amount, average_apy, t)} {asset}"
+            )
+
 
 ##About
 with st.container():
