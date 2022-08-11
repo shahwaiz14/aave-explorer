@@ -259,43 +259,43 @@ with st.expander("Details"):
 
 asset = st.selectbox("Pick one of the Assets", get_top_pools_in_aave(SDK))
 option = st.selectbox(
-    f"Are you looking to borrow or lend your {asset}?", ("Lend", "Borrow")
+    f"Are you looking to borrow or lend your {asset}?", ('< SELECT A VALUE >', "Lend", "Borrow")
 )
-if option:
+if option != '< SELECT A VALUE >':
     start_date = st.date_input("Start date:", value=date.today() - timedelta(10), max_value=date.today())
     end_date = st.date_input("End date:", max_value=date.today())
     if end_date < start_date:
-        st.warning("Please pick the right date")
+        st.warning("Please pick the right dates")
 
-df, average_apy = get_apy_rates(SDK, option, asset, str(start_date), str(end_date))
-if df.empty:
-    st.info(f"No rates found for {asset} between {start_date} and {end_date}")
+    df, average_apy = get_apy_rates(SDK, option, asset, str(start_date), str(end_date))
+    if df.empty:
+        st.info(f"No rates found for {asset} between {start_date} and {end_date}")
+    else:
+        st.subheader(f"Historical APY for {option.lower()}ing {asset}")
+        st.table(df.sort_values("date", ascending=False))
+        try:
+            col_name = "supply_rate" if option == "Lend" else "borrow_rate_stable"
+            bar_chart = (
+                        alt.Chart(df, height=400)
+                        .mark_bar()
+                        .encode(x="date", y=col_name)
+                        .configure_axisX(labelAngle=45)
+                        )
 
-st.subheader(f"Historical APY for {option.lower()}ing {asset}")
-st.table(df.sort_values("date", ascending=False))
-try:
-    col_name = "supply_rate" if option == "Lend" else "borrow_rate_stable"
-    bar_chart = (
-                alt.Chart(df, height=400)
-                .mark_bar()
-                .encode(x="date", y=col_name)
-                .configure_axisX(labelAngle=45)
-                )
+            st.altair_chart(bar_chart, use_container_width=True)
+        except:
+            pass
 
-    st.altair_chart(bar_chart, use_container_width=True)
-except:
-    pass
-
-st.metric(f"Average Rate for {option}ing {asset}:", round(average_apy, 3))
-amount = st.number_input(f"How much are you willing to {option.lower()} {asset}", min_value=0, value=100)
-if amount:
-    t = st.slider("Select time frame in months", min_value=0, max_value=12)
-    if t:
-        f = "earn" if option == "Lend" else "pay"
-        st.metric(
-            f"Total amount you will {f} with {round(average_apy, 3)}% rate in {t} months is:",
-            f"{calculate_earning(amount, average_apy, t)} {asset}"
-            )
+        st.metric(f"Average Rate for {option}ing {asset}:", round(average_apy, 3))
+        amount = st.number_input(f"How much are you willing to {option.lower()} {asset}", min_value=0, value=100)
+        if amount:
+            t = st.slider("Select time frame in months", min_value=0, max_value=12)
+            if t:
+                f = "earn" if option == "Lend" else "pay"
+                st.metric(
+                    f"Total amount you will {f} with {round(average_apy, 3)}% rate in {t} months is:",
+                    f"{calculate_earning(amount, average_apy, t)} {asset}"
+                    )
 
 
 ##About
