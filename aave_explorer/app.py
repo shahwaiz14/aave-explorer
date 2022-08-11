@@ -287,7 +287,7 @@ except:
     pass
 
 st.metric(f"Average Rate for {option}ing {asset}:", round(average_apy, 3))
-amount = st.number_input(f"How much are you willing to {option.lower()} {asset}", min_value=0)
+amount = st.number_input(f"How much are you willing to {option.lower()} {asset}", min_value=0, value=100)
 if amount:
     t = st.slider("Select time frame in months", min_value=0, max_value=12)
     if t:

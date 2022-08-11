@@ -52,6 +52,7 @@ def get_apy_rates(
         return (filtered_df, filtered_df[col_name].mean())
 
 
-def calculate_earning(amount: float, apy: float, time: int) -> float:
-    yield_ = amount * apy * time
-    return yield_
+def calculate_earning(amount: float, apy: int, time: int) -> float:
+    # TODO: check if this is the correct way
+    yield_ = amount * apy * (time / 12)
+    return round(yield_, 5)
