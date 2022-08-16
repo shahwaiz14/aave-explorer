@@ -38,7 +38,7 @@ def price_change_in_pct(sdk: ShroomDK) -> float:
     if result.records[0]["pct_change"] == None:
         return 0
     else:
-        return result.records[0]["pct_change"]
+        return round(result.records[0]["pct_change"], 2)
 
 
 def get_total_holders(sdk: ShroomDK) -> int:

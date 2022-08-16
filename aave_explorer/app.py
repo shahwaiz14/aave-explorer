@@ -56,7 +56,7 @@ col1, col2, col3 = st.columns([1.5, 1.5, 2.5])
 col1.metric(
     label="AAVE Price",
     value=get_aave_price(SDK),
-    delta=f"{round(price_change_in_pct(SDK), 2)}%",
+    delta=price_change_in_pct(SDK),
 )
 col2.metric(label="Total Holders", value=f"{get_total_holders(SDK):,}")
 col3.metric(label="Market Cap", value=f"{get_market_cap(SDK):,}")
